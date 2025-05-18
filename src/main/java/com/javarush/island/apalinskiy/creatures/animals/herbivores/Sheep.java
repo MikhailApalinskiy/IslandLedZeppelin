@@ -1,13 +1,10 @@
 package com.javarush.island.apalinskiy.creatures.animals.herbivores;
 
-import lombok.Getter;
-
-@Getter
 public class Sheep extends Herbivore {
-    private final double weight = 70;
-    private final double satietySize = 15;
-    private final int flockSize = 140;
-    private final int speed = 3;
+
+    public Sheep() {
+        super(70, 15, 3, 140);
+    }
 
     @Override
     public void eat() {
@@ -15,12 +12,17 @@ public class Sheep extends Herbivore {
     }
 
     @Override
-    public void multiple() {
+    public void reproduce() {
 
     }
 
     @Override
     public void move() {
+
+    }
+
+    @Override
+    public void die() {
 
     }
 }

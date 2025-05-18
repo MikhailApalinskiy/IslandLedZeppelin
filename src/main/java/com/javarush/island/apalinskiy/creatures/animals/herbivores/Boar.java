@@ -1,21 +1,20 @@
 package com.javarush.island.apalinskiy.creatures.animals.herbivores;
 
-import lombok.Getter;
-
-@Getter
 public class Boar extends Herbivore {
-    private final double weight = 400;
-    private final double satietySize = 50;
-    private final int flockSize = 50;
-    private final int speed = 2;
 
-    @Override
-    public void eat() {
-
+    public Boar() {
+        super(400, 50, 2, 50);
     }
 
     @Override
-    public void multiple() {
+    public void eat() {
+        while (getCurrentSatiety() <= getSatietySize()){
+            //setCurrentSatiety(findAMeal());
+        }
+    }
+
+    @Override
+    public void reproduce() {
 
     }
 
@@ -24,4 +23,8 @@ public class Boar extends Herbivore {
 
     }
 
+    @Override
+    public void die() {
+
+    }
 }

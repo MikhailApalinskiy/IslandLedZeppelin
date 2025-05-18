@@ -1,13 +1,10 @@
 package com.javarush.island.apalinskiy.creatures.animals.herbivores;
 
-import lombok.Getter;
-
-@Getter
 public class Buffalo extends Herbivore {
-    private final double weight = 700;
-    private final double satietySize = 100;
-    private final int flockSize = 10;
-    private final int speed = 3;
+
+    public Buffalo() {
+        super(700, 100, 3, 10);
+    }
 
     @Override
     public void eat() {
@@ -15,12 +12,17 @@ public class Buffalo extends Herbivore {
     }
 
     @Override
-    public void multiple() {
+    public void reproduce() {
 
     }
 
     @Override
     public void move() {
+
+    }
+
+    @Override
+    public void die() {
 
     }
 }

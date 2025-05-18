@@ -1,13 +1,10 @@
 package com.javarush.island.apalinskiy.creatures.animals.herbivores;
 
-import lombok.Getter;
-
-@Getter
 public class Mouse extends Herbivore {
-    private final double weight = 0.05;
-    private final double satietySize = 0.01;
-    private final int flockSize = 500;
-    private final int speed = 1;
+
+    public Mouse() {
+        super(0.05, 0.01, 1, 500);
+    }
 
     @Override
     public void eat() {
@@ -15,12 +12,17 @@ public class Mouse extends Herbivore {
     }
 
     @Override
-    public void multiple() {
+    public void reproduce() {
 
     }
 
     @Override
     public void move() {
+
+    }
+
+    @Override
+    public void die() {
 
     }
 }

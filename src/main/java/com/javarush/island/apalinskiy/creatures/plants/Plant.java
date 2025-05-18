@@ -1,16 +1,18 @@
 package com.javarush.island.apalinskiy.creatures.plants;
 
-import com.javarush.island.apalinskiy.creatures.Creature;
-import com.javarush.island.apalinskiy.api.entity.Multiplying;
-import lombok.Getter;
+public class Plant extends AbstractPlant {
 
-@Getter
-public class Plant extends Creature implements Multiplying {
-    private final double weight = 1;
-    private final int flockSize = 200;
+    public Plant() {
+        super(200, 1);
+    }
 
     @Override
-    public void multiple() {
+    public void reproduce() {
+
+    }
+
+    @Override
+    public void die() {
 
     }
 }

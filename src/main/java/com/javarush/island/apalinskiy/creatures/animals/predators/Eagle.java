@@ -1,13 +1,10 @@
 package com.javarush.island.apalinskiy.creatures.animals.predators;
 
-import lombok.Getter;
-
-@Getter
 public class Eagle extends Predator {
-    private final double weight = 6;
-    private final double satietySize = 1;
-    private final int flockSize = 20;
-    private final int speed = 3;
+
+    public Eagle() {
+        super(6, 1, 3, 20);
+    }
 
     @Override
     public void eat() {
@@ -15,12 +12,17 @@ public class Eagle extends Predator {
     }
 
     @Override
-    public void multiple() {
+    public void reproduce() {
 
     }
 
     @Override
     public void move() {
+
+    }
+
+    @Override
+    public void die() {
 
     }
 }

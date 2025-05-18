@@ -1,13 +1,10 @@
 package com.javarush.island.apalinskiy.creatures.animals.herbivores;
 
-import lombok.Getter;
-
-@Getter
 public class Duck extends Herbivore {
-    private final double weight = 1;
-    private final double satietySize = 0.15;
-    private final int flockSize = 200;
-    private final int speed = 4;
+
+    public Duck() {
+        super(1, 0.15, 4, 200);
+    }
 
     @Override
     public void eat() {
@@ -15,12 +12,17 @@ public class Duck extends Herbivore {
     }
 
     @Override
-    public void multiple() {
+    public void reproduce() {
 
     }
 
     @Override
     public void move() {
+
+    }
+
+    @Override
+    public void die() {
 
     }
 }

@@ -1,13 +1,10 @@
 package com.javarush.island.apalinskiy.creatures.animals.herbivores;
 
-import lombok.Getter;
-
-@Getter
 public class Caterpillar extends Herbivore {
-    private final double weight = 0.01;
-    private final double satietySize = 0;
-    private final int flockSize = 1000;
-    private final int speed = 0;
+
+    public Caterpillar() {
+        super(0.01, 0, 0, 1000);
+    }
 
     @Override
     public void eat() {
@@ -15,12 +12,17 @@ public class Caterpillar extends Herbivore {
     }
 
     @Override
-    public void multiple() {
+    public void reproduce() {
 
     }
 
     @Override
     public void move() {
+
+    }
+
+    @Override
+    public void die() {
 
     }
 }
