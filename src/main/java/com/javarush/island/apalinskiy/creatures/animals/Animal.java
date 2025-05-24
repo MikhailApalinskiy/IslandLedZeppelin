@@ -5,6 +5,7 @@ import com.javarush.island.apalinskiy.api.entity.Moveable;
 import com.javarush.island.apalinskiy.creatures.Creature;
 import com.javarush.island.apalinskiy.api.entity.Eatable;
 import com.javarush.island.apalinskiy.api.entity.Reproducible;
+import com.javarush.island.apalinskiy.map.Cell;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,7 +19,8 @@ public abstract class Animal extends Creature implements Eatable, Moveable, Repr
     private final int speed;
     private final int flockSize;
     private final int serialNumber;
-    private int currentSatiety;
+    private Cell currentCell;
+    private double currentSatiety;
 
     private static int counter = 0;
 
