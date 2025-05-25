@@ -19,8 +19,9 @@ public abstract class Animal extends Creature implements Eatable, Moveable, Repr
     private final int speed;
     private final int flockSize;
     private final int serialNumber;
-    private Cell currentCell;
     private double currentSatiety;
+    private boolean isAlive = true;
+    private Cell currentCell;
 
     private static int counter = 0;
 
@@ -31,6 +32,44 @@ public abstract class Animal extends Creature implements Eatable, Moveable, Repr
         this.flockSize = flockSize;
         this.serialNumber = ++counter;
         this.currentSatiety = 0;
+    }
+
+    protected abstract Animal createOffspring();
+
+    @Override
+    public void die() {
+        this.isAlive = false;
+        if (getCurrentCell() != null) {
+            getCurrentCell().removeCreature(this);
+        }
+        setCurrentCell(null);
+    }
+
+    @Override
+    public void move() {
+
+    }
+
+    @Override
+    public void reproduce() {
+        if (!isAlive()) {
+            return;
+        }
+        if (getCurrentCell() == null) {
+            return;
+        }
+        long sameTypeCount = getCurrentCell().getAnimals().stream()
+                .filter(animal -> animal.getClass() == this.getClass())
+                .count();
+        if (sameTypeCount >= getFlockSize()) {
+            return;
+        }
+        for (Creature creature : getCurrentCell().getCreatures()) {
+            if (creature != this && creature.getClass() == this.getClass()) {
+                getCurrentCell().addAnimal(createOffspring());
+                break;
+            }
+        }
     }
 
     @Override

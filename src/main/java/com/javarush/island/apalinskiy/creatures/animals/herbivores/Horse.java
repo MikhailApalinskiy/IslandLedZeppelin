@@ -1,5 +1,7 @@
 package com.javarush.island.apalinskiy.creatures.animals.herbivores;
 
+import com.javarush.island.apalinskiy.creatures.animals.Animal;
+
 public class Horse extends Herbivore {
 
     public Horse() {
@@ -7,18 +9,7 @@ public class Horse extends Herbivore {
     }
 
     @Override
-    public void reproduce() {
-
+    protected Animal createOffspring() {
+        return new Horse();
     }
-
-    @Override
-    public void move() {
-
-    }
-
-    @Override
-    public void die() {
-
-    }
-
 }

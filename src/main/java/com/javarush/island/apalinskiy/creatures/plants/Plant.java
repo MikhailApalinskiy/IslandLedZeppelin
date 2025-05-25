@@ -7,12 +7,7 @@ public class Plant extends AbstractPlant {
     }
 
     @Override
-    public void reproduce() {
-
-    }
-
-    @Override
-    public void die() {
-
+    protected AbstractPlant createOffspring() {
+        return new Plant();
     }
 }

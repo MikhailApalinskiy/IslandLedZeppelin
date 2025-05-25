@@ -68,6 +68,9 @@ public abstract class Herbivore extends Animal {
 
     @Override
     public void eat() {
+        if (!isAlive()){
+            return;
+        }
         if (getCurrentCell() == null) {
             return;
         }

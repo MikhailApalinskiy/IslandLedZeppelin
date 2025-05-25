@@ -1,5 +1,7 @@
 package com.javarush.island.apalinskiy.creatures.animals.predators;
 
+import com.javarush.island.apalinskiy.creatures.animals.Animal;
+
 public class Fox extends Predator {
 
     public Fox() {
@@ -7,17 +9,7 @@ public class Fox extends Predator {
     }
 
     @Override
-    public void reproduce() {
-
-    }
-
-    @Override
-    public void move() {
-
-    }
-
-    @Override
-    public void die() {
-
+    protected Animal createOffspring() {
+        return new Fox();
     }
 }

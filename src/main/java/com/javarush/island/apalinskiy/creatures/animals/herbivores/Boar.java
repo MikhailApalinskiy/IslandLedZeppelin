@@ -1,6 +1,7 @@
 package com.javarush.island.apalinskiy.creatures.animals.herbivores;
 
 import com.javarush.island.apalinskiy.creatures.Creature;
+import com.javarush.island.apalinskiy.creatures.animals.Animal;
 import com.javarush.island.apalinskiy.creatures.plants.AbstractPlant;
 
 import java.util.Map;
@@ -13,7 +14,15 @@ public class Boar extends Herbivore {
     }
 
     @Override
+    protected Animal createOffspring() {
+        return new Boar();
+    }
+
+    @Override
     public void eat() {
+        if (!isAlive()){
+            return;
+        }
         if (getCurrentCell() == null) {
             return;
         }
@@ -55,20 +64,5 @@ public class Boar extends Herbivore {
                 }
             }
         }
-    }
-
-    @Override
-    public void reproduce() {
-
-    }
-
-    @Override
-    public void move() {
-
-    }
-
-    @Override
-    public void die() {
-
     }
 }

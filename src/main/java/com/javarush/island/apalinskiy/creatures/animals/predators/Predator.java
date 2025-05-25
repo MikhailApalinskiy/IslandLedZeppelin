@@ -71,7 +71,12 @@ public abstract class Predator extends Animal {
 
     @Override
     public void eat() {
-        if (getCurrentCell() == null) return;
+        if (!isAlive()){
+            return;
+        }
+        if (getCurrentCell() == null) {
+            return;
+        }
         Map<Class<? extends Creature>, Integer> preferences = getFoodPreferences();
         if (preferences == null || preferences.isEmpty()) return;
         for (Creature creature : getCurrentCell().getCreatures()) {
