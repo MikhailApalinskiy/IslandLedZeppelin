@@ -1,14 +1,17 @@
 package com.javarush.island.apalinskiy.creatures.animals;
 
-import com.javarush.island.apalinskiy.api.entity.Killable;
-import com.javarush.island.apalinskiy.api.entity.Moveable;
+import com.javarush.island.apalinskiy.entity.Killable;
+import com.javarush.island.apalinskiy.entity.Moveable;
 import com.javarush.island.apalinskiy.creatures.Creature;
-import com.javarush.island.apalinskiy.api.entity.Eatable;
-import com.javarush.island.apalinskiy.api.entity.Reproducible;
+import com.javarush.island.apalinskiy.entity.Eatable;
+import com.javarush.island.apalinskiy.entity.Reproducible;
 import com.javarush.island.apalinskiy.map.Cell;
+import com.javarush.island.apalinskiy.util.MapUtils;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 @Setter
@@ -47,15 +50,26 @@ public abstract class Animal extends Creature implements Eatable, Moveable, Repr
 
     @Override
     public void move() {
-
+        if (!isAlive() || getCurrentCell() == null) {
+            return;
+        }
+        List<Cell> neighborsInRange = MapUtils.getNeighborsInRange(getCurrentCell(), getSpeed());
+        Collections.shuffle(neighborsInRange);
+        for (Cell neighbor : neighborsInRange) {
+            long countInNeighbor = neighbor.getAnimals().stream()
+                    .filter(animal -> animal.getClass() == this.getClass())
+                    .count();
+            if (countInNeighbor < getFlockSize()) {
+                getCurrentCell().removeAnimal(this);
+                neighbor.addAnimal(this);
+                return;
+            }
+        }
     }
 
     @Override
     public void reproduce() {
-        if (!isAlive()) {
-            return;
-        }
-        if (getCurrentCell() == null) {
+        if (!isAlive() || getCurrentCell() == null) {
             return;
         }
         long sameTypeCount = getCurrentCell().getAnimals().stream()

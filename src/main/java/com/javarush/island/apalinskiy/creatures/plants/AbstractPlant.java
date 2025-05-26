@@ -1,12 +1,15 @@
 package com.javarush.island.apalinskiy.creatures.plants;
 
-import com.javarush.island.apalinskiy.api.entity.Killable;
-import com.javarush.island.apalinskiy.api.entity.Reproducible;
+import com.javarush.island.apalinskiy.entity.Killable;
+import com.javarush.island.apalinskiy.entity.Reproducible;
 import com.javarush.island.apalinskiy.creatures.Creature;
 import com.javarush.island.apalinskiy.map.Cell;
+import com.javarush.island.apalinskiy.util.MapUtils;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -15,6 +18,7 @@ public abstract class AbstractPlant extends Creature implements Killable, Reprod
     private final double weight;
     private final int flockSize;
     private final int serialNumber;
+    private final int speed = 1;
     private Cell currentCell;
     private boolean isAlive = true;
 
@@ -39,22 +43,30 @@ public abstract class AbstractPlant extends Creature implements Killable, Reprod
 
     @Override
     public void reproduce() {
-        if (!isAlive()){
-            return;
-        }
-        if (getCurrentCell() == null) {
+        if (!isAlive() || getCurrentCell() == null) {
             return;
         }
         long sameTypeCount = getCurrentCell().getPlants().stream()
                 .filter(plant -> plant.getClass() == this.getClass())
                 .count();
-        if (sameTypeCount >= getFlockSize()) {
-            return;
-        }
         for (Creature creature : getCurrentCell().getCreatures()) {
             if (creature != this && creature.getClass() == this.getClass()) {
-                getCurrentCell().addPlant(createOffspring());
-                break;
+                if (sameTypeCount >= getFlockSize()) {
+                    List<Cell> neighborsInRange = MapUtils.getNeighborsInRange(getCurrentCell(), getSpeed());
+                    Collections.shuffle(neighborsInRange);
+                    for (Cell neighbor : neighborsInRange) {
+                        long countInNeighbor = neighbor.getPlants().stream()
+                                .filter(plant -> plant.getClass() == this.getClass())
+                                .count();
+                        if (countInNeighbor < getFlockSize()) {
+                            neighbor.addPlant(createOffspring());
+                            return;
+                        }
+                    }
+                } else {
+                    getCurrentCell().addPlant(createOffspring());
+                }
+                return;
             }
         }
     }

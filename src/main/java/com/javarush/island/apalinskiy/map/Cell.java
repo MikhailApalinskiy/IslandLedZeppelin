@@ -6,6 +6,7 @@ import com.javarush.island.apalinskiy.creatures.plants.AbstractPlant;
 import lombok.Getter;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Getter
@@ -54,5 +55,16 @@ public class Cell {
         } else if (creature instanceof AbstractPlant plant) {
             removePlant(plant);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Cell cell)) return false;
+        return x == cell.x && y == cell.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 }

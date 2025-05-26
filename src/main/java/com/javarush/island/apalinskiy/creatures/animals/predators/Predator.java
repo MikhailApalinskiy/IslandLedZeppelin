@@ -71,10 +71,7 @@ public abstract class Predator extends Animal {
 
     @Override
     public void eat() {
-        if (!isAlive()){
-            return;
-        }
-        if (getCurrentCell() == null) {
+        if (!isAlive() || getCurrentCell() == null) {
             return;
         }
         Map<Class<? extends Creature>, Integer> preferences = getFoodPreferences();
@@ -83,11 +80,11 @@ public abstract class Predator extends Animal {
             if (this == creature) {
                 continue;
             }
-            if (getCurrentSatiety() >= getSatietySize()){
+            if (getCurrentSatiety() >= getSatietySize()) {
                 break;
             }
             Integer chance = preferences.get(creature.getClass());
-            if (chance == null){
+            if (chance == null) {
                 continue;
             }
             if (creature instanceof Animal animal) {

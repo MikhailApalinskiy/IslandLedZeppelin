@@ -1,4 +1,4 @@
-package com.javarush.island.apalinskiy.api.entity;
+package com.javarush.island.apalinskiy.entity;
 
 public interface Reproducible {
     void reproduce();

@@ -68,10 +68,7 @@ public abstract class Herbivore extends Animal {
 
     @Override
     public void eat() {
-        if (!isAlive()){
-            return;
-        }
-        if (getCurrentCell() == null) {
+        if (!isAlive() || getCurrentCell() == null) {
             return;
         }
         Map<Class<? extends Creature>, Integer> preferences = getFoodPreferences();

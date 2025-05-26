@@ -9,9 +9,9 @@ public class Map {
     private final Cell[][] map = new Cell[length][width];
 
     public void initializeMap(){
-        for (int i = 0; i < map.length; i++) {
-            for (int j = 0; j < map[0].length; j++) {
-                map[i][j] = new Cell(i, j);
+        for (int x = 0; x < map.length; x++) {
+            for (int y = 0; y < map[0].length; y++) {
+                map[x][y] = new Cell(x, y);
             }
         }
     }
