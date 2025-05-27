@@ -43,31 +43,50 @@ public abstract class AbstractPlant extends Creature implements Killable, Reprod
 
     @Override
     public void reproduce() {
-        if (!isAlive() || getCurrentCell() == null) {
-            return;
-        }
-        long sameTypeCount = getCurrentCell().getPlants().stream()
-                .filter(plant -> plant.getClass() == this.getClass())
-                .count();
-        for (Creature creature : getCurrentCell().getCreatures()) {
-            if (creature != this && creature.getClass() == this.getClass()) {
-                if (sameTypeCount >= getFlockSize()) {
-                    List<Cell> neighborsInRange = MapUtils.getNeighborsInRange(getCurrentCell(), getSpeed());
-                    Collections.shuffle(neighborsInRange);
-                    for (Cell neighbor : neighborsInRange) {
-                        long countInNeighbor = neighbor.getPlants().stream()
-                                .filter(plant -> plant.getClass() == this.getClass())
-                                .count();
-                        if (countInNeighbor < getFlockSize()) {
-                            neighbor.addPlant(createOffspring());
-                            return;
-                        }
-                    }
-                } else {
-                    getCurrentCell().addPlant(createOffspring());
-                }
+        Cell cell = getCurrentCell();
+        cell.getLock().lock();
+        try {
+            if (!isAlive() || getCurrentCell() != cell) {
                 return;
             }
+            long sameTypeCount = cell.getPlants().stream()
+                    .filter(plant -> plant.getClass() == this.getClass())
+                    .count();
+            for (AbstractPlant plant : cell.getPlants()) {
+                if (plant != this && plant.getClass() == this.getClass()) {
+                    if (sameTypeCount >= getFlockSize()) {
+                        List<Cell> neighborsInRange = MapUtils.getNeighborsInRange(cell, getSpeed());
+                        Collections.shuffle(neighborsInRange);
+                        for (Cell neighbor : neighborsInRange) {
+                            Cell firstLock = cell.hashCode() < neighbor.hashCode() ? cell : neighbor;
+                            Cell secondLock = cell.hashCode() < neighbor.hashCode() ? neighbor : cell;
+
+                            firstLock.getLock().lock();
+                            secondLock.getLock().lock();
+                            try {
+                                if (!isAlive()) return;
+                                if (getCurrentCell() != cell) return;
+
+                                long countInNeighbor = neighbor.getPlants().stream()
+                                        .filter(p -> p.getClass() == this.getClass())
+                                        .count();
+                                if (countInNeighbor < getFlockSize()) {
+                                    neighbor.addPlant(createOffspring());
+                                    return;
+                                }
+                            } finally {
+                                secondLock.getLock().unlock();
+                                firstLock.getLock().unlock();
+                            }
+                        }
+                    } else {
+                        cell.addPlant(createOffspring());
+                    }
+                    return;
+                }
+            }
+        } finally {
+            cell.getLock().unlock();
         }
     }
 

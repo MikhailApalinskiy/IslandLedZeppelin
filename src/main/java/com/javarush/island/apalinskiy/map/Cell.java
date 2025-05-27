@@ -8,14 +8,15 @@ import lombok.Getter;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Getter
 public class Cell {
     private final int x;
     private final int y;
-
     private final HashSet<Animal> animals = new HashSet<>();
     private final HashSet<AbstractPlant> plants = new HashSet<>();
+    private final ReentrantLock lock = new ReentrantLock();
 
     public Cell(int x, int y) {
         this.x = x;

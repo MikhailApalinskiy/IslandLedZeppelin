@@ -4,6 +4,7 @@ import com.javarush.island.apalinskiy.creatures.Creature;
 import com.javarush.island.apalinskiy.creatures.animals.Animal;
 import com.javarush.island.apalinskiy.creatures.plants.AbstractPlant;
 import com.javarush.island.apalinskiy.creatures.plants.Plant;
+import com.javarush.island.apalinskiy.map.Cell;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -68,30 +69,36 @@ public abstract class Herbivore extends Animal {
 
     @Override
     public void eat() {
-        if (!isAlive() || getCurrentCell() == null) {
-            return;
-        }
-        Map<Class<? extends Creature>, Integer> preferences = getFoodPreferences();
-        if (preferences == null || preferences.isEmpty()) return;
-        for (Creature creature : getCurrentCell().getCreatures()) {
-            if (this == creature) {
-                continue;
+        Cell cell = getCurrentCell();
+        cell.getLock().lock();
+        try {
+            if (!isAlive() || getCurrentCell() != cell) {
+                return;
             }
-            if (getCurrentSatiety() >= getSatietySize()) {
-                break;
-            }
-            Integer chance = preferences.get(creature.getClass());
-            if (chance == null) {
-                continue;
-            }
-            if (creature instanceof AbstractPlant plant) {
-                int roll = ThreadLocalRandom.current().nextInt(100);
-                if (roll < chance) {
-                    setCurrentSatiety(getCurrentSatiety() + plant.getWeight());
-                    getCurrentCell().removeCreature(creature);
-                    plant.die();
+            Map<Class<? extends Creature>, Integer> preferences = getFoodPreferences();
+            if (preferences == null || preferences.isEmpty()) return;
+            for (Creature creature : cell.getCreatures()) {
+                if (this == creature) {
+                    continue;
+                }
+                if (getCurrentSatiety() >= getSatietySize()) {
+                    break;
+                }
+                Integer chance = preferences.get(creature.getClass());
+                if (chance == null) {
+                    continue;
+                }
+                if (creature instanceof AbstractPlant plant) {
+                    int roll = ThreadLocalRandom.current().nextInt(100);
+                    if (roll < chance) {
+                        setCurrentSatiety(getCurrentSatiety() + plant.getWeight());
+                        cell.removeCreature(creature);
+                        plant.die();
+                    }
                 }
             }
+        } finally {
+            cell.getLock().unlock();
         }
     }
 }

@@ -50,39 +50,69 @@ public abstract class Animal extends Creature implements Eatable, Moveable, Repr
 
     @Override
     public void move() {
-        if (!isAlive() || getCurrentCell() == null) {
-            return;
-        }
-        List<Cell> neighborsInRange = MapUtils.getNeighborsInRange(getCurrentCell(), getSpeed());
-        Collections.shuffle(neighborsInRange);
-        for (Cell neighbor : neighborsInRange) {
-            long countInNeighbor = neighbor.getAnimals().stream()
-                    .filter(animal -> animal.getClass() == this.getClass())
-                    .count();
-            if (countInNeighbor < getFlockSize()) {
-                getCurrentCell().removeAnimal(this);
-                neighbor.addAnimal(this);
+        Cell cell = getCurrentCell();
+        cell.getLock().lock();
+        try {
+            if (!isAlive() || getCurrentCell() != cell) {
                 return;
             }
+            List<Cell> neighbors = MapUtils.getNeighborsInRange(cell, getSpeed());
+            Collections.shuffle(neighbors);
+            for (Cell toCell : neighbors) {
+                Cell firstLock = cell.hashCode() < toCell.hashCode() ? cell : toCell;
+                Cell secondLock = cell.hashCode() < toCell.hashCode() ? toCell : cell;
+                firstLock.getLock().lock();
+                secondLock.getLock().lock();
+                try {
+                    if (!isAlive()) {
+                        return;
+                    }
+                    if (getCurrentCell() != cell) {
+                        return;
+                    }
+                    long sameTypeCount = toCell.getAnimals().stream()
+                            .filter(animal -> animal.getClass() == this.getClass())
+                            .count();
+                    if (sameTypeCount < getFlockSize()) {
+                        cell.removeAnimal(this);
+                        toCell.addAnimal(this);
+                        setCurrentCell(toCell);
+                        return;
+                    }
+
+                } finally {
+                    secondLock.getLock().unlock();
+                    firstLock.getLock().unlock();
+                }
+            }
+        } finally {
+            cell.getLock().unlock();
         }
+
     }
 
     @Override
     public void reproduce() {
-        if (!isAlive() || getCurrentCell() == null) {
-            return;
-        }
-        long sameTypeCount = getCurrentCell().getAnimals().stream()
-                .filter(animal -> animal.getClass() == this.getClass())
-                .count();
-        if (sameTypeCount >= getFlockSize()) {
-            return;
-        }
-        for (Creature creature : getCurrentCell().getCreatures()) {
-            if (creature != this && creature.getClass() == this.getClass()) {
-                getCurrentCell().addAnimal(createOffspring());
-                break;
+        Cell cell = getCurrentCell();
+        cell.getLock().lock();
+        try {
+            if (!isAlive() || getCurrentCell() != cell) {
+                return;
             }
+            long sameTypeCount = cell.getAnimals().stream()
+                    .filter(animal -> animal.getClass() == this.getClass())
+                    .count();
+            if (sameTypeCount >= getFlockSize()) {
+                return;
+            }
+            for (Creature animal : cell.getAnimals()) {
+                if (animal != this && animal.getClass() == this.getClass()) {
+                    cell.addAnimal(createOffspring());
+                    break;
+                }
+            }
+        } finally {
+            cell.getLock().unlock();
         }
     }
 

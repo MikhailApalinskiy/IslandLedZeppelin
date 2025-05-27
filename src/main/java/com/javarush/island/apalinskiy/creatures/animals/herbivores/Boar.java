@@ -3,6 +3,7 @@ package com.javarush.island.apalinskiy.creatures.animals.herbivores;
 import com.javarush.island.apalinskiy.creatures.Creature;
 import com.javarush.island.apalinskiy.creatures.animals.Animal;
 import com.javarush.island.apalinskiy.creatures.plants.AbstractPlant;
+import com.javarush.island.apalinskiy.map.Cell;
 
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -20,49 +21,58 @@ public class Boar extends Herbivore {
 
     @Override
     public void eat() {
-        if (!isAlive()){
-            return;
-        }
-        if (getCurrentCell() == null) {
-            return;
-        }
-        Map<Class<? extends Creature>, Integer> preferences = getFoodPreferences();
-        if (preferences == null || preferences.isEmpty()) {
-            return;
-        }
-        for (Creature creature : getCurrentCell().getCreatures()) {
-            if (this == creature) {
-                continue;
+        Cell cell = getCurrentCell();
+        cell.getLock().lock();
+        try {
+            if (!isAlive() || getCurrentCell() != cell) {
+                return;
             }
-            if (getCurrentSatiety() >= getSatietySize()) {
-                break;
+            Map<Class<? extends Creature>, Integer> preferences = getFoodPreferences();
+            if (preferences == null || preferences.isEmpty()) {
+                return;
             }
-            Integer chance = preferences.get(creature.getClass());
-            if (chance == null) {
-                continue;
-            }
-            if (creature instanceof AbstractPlant plant) {
-                int roll = ThreadLocalRandom.current().nextInt(100);
-                if (roll < chance) {
-                    setCurrentSatiety(getCurrentSatiety() + plant.getWeight());
-                    getCurrentCell().removeCreature(creature);
-                    plant.die();
+            for (Creature creature : cell.getCreatures()) {
+                if (this == creature) {
+                    continue;
                 }
-            } else if (creature instanceof Caterpillar caterpillar) {
-                int roll = ThreadLocalRandom.current().nextInt(100);
-                if (roll < chance) {
-                    setCurrentSatiety(getCurrentSatiety() + caterpillar.getWeight());
-                    getCurrentCell().removeCreature(creature);
-                    caterpillar.die();
+                if (getCurrentSatiety() >= getSatietySize()) {
+                    break;
                 }
-            } else if (creature instanceof Mouse mouse) {
-                int roll = ThreadLocalRandom.current().nextInt(100);
-                if (roll < chance) {
-                    setCurrentSatiety(getCurrentSatiety() + mouse.getWeight());
-                    getCurrentCell().removeCreature(creature);
-                    mouse.die();
+                Integer chance = preferences.get(creature.getClass());
+                if (chance == null) {
+                    continue;
+                }
+                switch (creature) {
+                    case AbstractPlant plant -> {
+                        int roll = ThreadLocalRandom.current().nextInt(100);
+                        if (roll < chance) {
+                            setCurrentSatiety(getCurrentSatiety() + plant.getWeight());
+                            cell.removeCreature(creature);
+                            plant.die();
+                        }
+                    }
+                    case Caterpillar caterpillar -> {
+                        int roll = ThreadLocalRandom.current().nextInt(100);
+                        if (roll < chance) {
+                            setCurrentSatiety(getCurrentSatiety() + caterpillar.getWeight());
+                            cell.removeCreature(creature);
+                            caterpillar.die();
+                        }
+                    }
+                    case Mouse mouse -> {
+                        int roll = ThreadLocalRandom.current().nextInt(100);
+                        if (roll < chance) {
+                            setCurrentSatiety(getCurrentSatiety() + mouse.getWeight());
+                            cell.removeCreature(creature);
+                            mouse.die();
+                        }
+                    }
+                    default -> {
+                    }
                 }
             }
+        } finally {
+            cell.getLock().unlock();
         }
     }
 }
