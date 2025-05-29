@@ -4,7 +4,6 @@ import com.javarush.island.apalinskiy.entity.Killable;
 import com.javarush.island.apalinskiy.entity.Reproducible;
 import com.javarush.island.apalinskiy.creatures.Creature;
 import com.javarush.island.apalinskiy.map.Cell;
-import com.javarush.island.apalinskiy.repository.PlantRegistry;
 import com.javarush.island.apalinskiy.util.MapUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,13 +14,13 @@ import java.util.Objects;
 
 @Getter
 @Setter
-public abstract class AbstractPlant extends Creature implements Killable, Reproducible {
+public abstract class AbstractPlant extends Creature implements Killable, Reproducible<AbstractPlant> {
     private final double weight;
     private final int flockSize;
     private final int serialNumber;
     private final int speed = 1;
-    private Cell currentCell;
     private boolean isAlive = true;
+    private Cell currentCell;
 
     private static int counter = 0;
 
@@ -43,15 +42,15 @@ public abstract class AbstractPlant extends Creature implements Killable, Reprod
     }
 
     @Override
-    public void reproduce() {
+    public AbstractPlant reproduce() {
         Cell cell = getCurrentCell();
         if (cell == null) {
-            return;
+            return null;
         }
         cell.getLock().lock();
         try {
             if (!isAlive()) {
-                return;
+                return null;
             }
             long sameTypeCount = cell.getPlants().stream()
                     .filter(plant -> plant.getClass() == this.getClass())
@@ -72,9 +71,8 @@ public abstract class AbstractPlant extends Creature implements Killable, Reprod
                                         .count();
                                 if (countInNeighbor < getFlockSize()) {
                                     AbstractPlant offSpring = createOffspring();
-                                    PlantRegistry.register(offSpring);
                                     neighbor.addPlant(offSpring);
-                                    return;
+                                    return offSpring;
                                 }
                             } finally {
                                 secondLock.getLock().unlock();
@@ -83,15 +81,16 @@ public abstract class AbstractPlant extends Creature implements Killable, Reprod
                         }
                     } else {
                         AbstractPlant offSpring = createOffspring();
-                        PlantRegistry.register(offSpring);
                         cell.addPlant(offSpring);
+                        return offSpring;
                     }
-                    return;
+                    return null;
                 }
             }
         } finally {
             cell.getLock().unlock();
         }
+        return null;
     }
 
     @Override

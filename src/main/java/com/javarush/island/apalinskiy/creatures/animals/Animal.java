@@ -6,7 +6,6 @@ import com.javarush.island.apalinskiy.creatures.Creature;
 import com.javarush.island.apalinskiy.entity.Eatable;
 import com.javarush.island.apalinskiy.entity.Reproducible;
 import com.javarush.island.apalinskiy.map.Cell;
-import com.javarush.island.apalinskiy.repository.AnimalRegistry;
 import com.javarush.island.apalinskiy.util.MapUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +16,7 @@ import java.util.Objects;
 
 @Setter
 @Getter
-public abstract class Animal extends Creature implements Eatable, Moveable, Reproducible, Killable {
+public abstract class Animal extends Creature implements Eatable, Moveable, Reproducible<Animal>, Killable {
     private final double weight;
     private final double satietySize;
     private final int speed;
@@ -88,33 +87,33 @@ public abstract class Animal extends Creature implements Eatable, Moveable, Repr
     }
 
     @Override
-    public void reproduce() {
+    public Animal reproduce() {
         Cell cell = getCurrentCell();
         if (cell == null) {
-            return;
+            return null;
         }
         cell.getLock().lock();
         try {
             if (!isAlive()) {
-                return;
+                return null;
             }
             long sameTypeCount = cell.getAnimals().stream()
                     .filter(animal -> animal.getClass() == this.getClass())
                     .count();
             if (sameTypeCount >= getFlockSize()) {
-                return;
+                return null;
             }
             for (Creature animal : cell.getAnimals()) {
                 if (animal != this && animal.getClass() == this.getClass()) {
-                    Animal offspring = createOffspring();
-                    AnimalRegistry.register(offspring);
-                    cell.addAnimal(offspring);
-                    break;
+                    Animal offSpring = createOffspring();
+                    cell.addAnimal(offSpring);
+                    return offSpring;
                 }
             }
         } finally {
             cell.getLock().unlock();
         }
+        return null;
     }
 
     @Override

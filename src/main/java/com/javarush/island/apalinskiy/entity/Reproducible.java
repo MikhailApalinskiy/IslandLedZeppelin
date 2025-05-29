@@ -1,6 +1,8 @@
 package com.javarush.island.apalinskiy.entity;
 
-public interface Reproducible {
-    void reproduce();
+import com.javarush.island.apalinskiy.creatures.Creature;
+
+public interface Reproducible<T extends Creature> {
+    T reproduce();
 }
 
