@@ -6,6 +6,7 @@ import com.javarush.island.apalinskiy.creatures.Creature;
 import com.javarush.island.apalinskiy.entity.Eatable;
 import com.javarush.island.apalinskiy.entity.Reproducible;
 import com.javarush.island.apalinskiy.map.Cell;
+import com.javarush.island.apalinskiy.repository.AnimalRegistry;
 import com.javarush.island.apalinskiy.util.MapUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,9 +52,12 @@ public abstract class Animal extends Creature implements Eatable, Moveable, Repr
     @Override
     public void move() {
         Cell cell = getCurrentCell();
+        if (cell == null) {
+            return;
+        }
         cell.getLock().lock();
         try {
-            if (!isAlive() || getCurrentCell() != cell) {
+            if (!isAlive()) {
                 return;
             }
             List<Cell> neighbors = MapUtils.getNeighborsInRange(cell, getSpeed());
@@ -64,12 +68,6 @@ public abstract class Animal extends Creature implements Eatable, Moveable, Repr
                 firstLock.getLock().lock();
                 secondLock.getLock().lock();
                 try {
-                    if (!isAlive()) {
-                        return;
-                    }
-                    if (getCurrentCell() != cell) {
-                        return;
-                    }
                     long sameTypeCount = toCell.getAnimals().stream()
                             .filter(animal -> animal.getClass() == this.getClass())
                             .count();
@@ -79,7 +77,6 @@ public abstract class Animal extends Creature implements Eatable, Moveable, Repr
                         setCurrentCell(toCell);
                         return;
                     }
-
                 } finally {
                     secondLock.getLock().unlock();
                     firstLock.getLock().unlock();
@@ -88,15 +85,17 @@ public abstract class Animal extends Creature implements Eatable, Moveable, Repr
         } finally {
             cell.getLock().unlock();
         }
-
     }
 
     @Override
     public void reproduce() {
         Cell cell = getCurrentCell();
+        if (cell == null) {
+            return;
+        }
         cell.getLock().lock();
         try {
-            if (!isAlive() || getCurrentCell() != cell) {
+            if (!isAlive()) {
                 return;
             }
             long sameTypeCount = cell.getAnimals().stream()
@@ -107,7 +106,9 @@ public abstract class Animal extends Creature implements Eatable, Moveable, Repr
             }
             for (Creature animal : cell.getAnimals()) {
                 if (animal != this && animal.getClass() == this.getClass()) {
-                    cell.addAnimal(createOffspring());
+                    Animal offspring = createOffspring();
+                    AnimalRegistry.register(offspring);
+                    cell.addAnimal(offspring);
                     break;
                 }
             }

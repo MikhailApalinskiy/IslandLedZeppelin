@@ -70,13 +70,18 @@ public abstract class Herbivore extends Animal {
     @Override
     public void eat() {
         Cell cell = getCurrentCell();
+        if (cell == null) {
+            return;
+        }
         cell.getLock().lock();
         try {
-            if (!isAlive() || getCurrentCell() != cell) {
+            if (!isAlive()) {
                 return;
             }
             Map<Class<? extends Creature>, Integer> preferences = getFoodPreferences();
-            if (preferences == null || preferences.isEmpty()) return;
+            if (preferences == null || preferences.isEmpty()) {
+                return;
+            }
             for (Creature creature : cell.getCreatures()) {
                 if (this == creature) {
                     continue;
