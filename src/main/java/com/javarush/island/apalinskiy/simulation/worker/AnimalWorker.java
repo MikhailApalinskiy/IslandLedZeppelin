@@ -2,6 +2,7 @@ package com.javarush.island.apalinskiy.simulation.worker;
 
 import com.javarush.island.apalinskiy.creatures.animals.Animal;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.locks.Condition;
@@ -20,7 +21,9 @@ public class AnimalWorker implements Runnable {
 
     @Override
     public void run() {
+        List<Animal> newbornAnimals = new ArrayList<>();
         while (!Thread.currentThread().isInterrupted()) {
+            newbornAnimals.clear();
             Iterator<Animal> iterator = animals.iterator();
             while (iterator.hasNext()) {
                 Animal animal = iterator.next();
@@ -30,7 +33,11 @@ public class AnimalWorker implements Runnable {
                 }
                 animal.move();
                 animal.eat();
-                animal.reproduce();
+                Animal offSpring = animal.reproduce();
+                if (offSpring != null){
+                    newbornAnimals.add(offSpring);
+                }
+                animals.addAll(newbornAnimals);
             }
             lock.lock();
             try {

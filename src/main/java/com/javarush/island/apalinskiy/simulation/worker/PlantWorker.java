@@ -1,7 +1,9 @@
 package com.javarush.island.apalinskiy.simulation.worker;
 
 import com.javarush.island.apalinskiy.creatures.plants.AbstractPlant;
+import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.locks.Condition;
@@ -20,7 +22,9 @@ public class PlantWorker implements Runnable {
 
     @Override
     public void run() {
+        List<AbstractPlant> newbornPlants = new ArrayList<>();
         while (!Thread.currentThread().isInterrupted()) {
+            newbornPlants.clear();
             Iterator<AbstractPlant> iterator = plants.iterator();
             while (iterator.hasNext()) {
                 AbstractPlant plant = iterator.next();
@@ -28,8 +32,12 @@ public class PlantWorker implements Runnable {
                     iterator.remove();
                     continue;
                 }
-                plant.reproduce();
+                AbstractPlant offSpring = plant.reproduce();
+                if (offSpring != null) {
+                    newbornPlants.add(offSpring);
+                }
             }
+            plants.addAll(newbornPlants);
             lock.lock();
             try {
                 condition.await();
