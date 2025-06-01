@@ -5,22 +5,26 @@ import com.javarush.island.apalinskiy.creatures.animals.Animal;
 import com.javarush.island.apalinskiy.creatures.plants.AbstractPlant;
 import lombok.Getter;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Getter
 public class Cell {
     private final int x;
     private final int y;
-    private final HashSet<Animal> animals = new HashSet<>();
-    private final HashSet<AbstractPlant> plants = new HashSet<>();
-    private final ReentrantLock lock = new ReentrantLock();
+    private final ArrayList<Animal> animals = new ArrayList<>();
+    private final ArrayList<AbstractPlant> plants = new ArrayList<>();
+    private final Queue<Animal> newAnimals = new ConcurrentLinkedQueue<>();
+    private final Queue<AbstractPlant> newPlants = new ConcurrentLinkedQueue<>();
 
     public Cell(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    public void addNewAnimal(Animal animal) {
+        newAnimals.add(animal);
+        animal.setCurrentCell(this);
     }
 
     public void addAnimal(Animal animal) {
@@ -28,19 +32,14 @@ public class Cell {
         animal.setCurrentCell(this);
     }
 
-    public void removeAnimal(Animal animal) {
-        animals.remove(animal);
-        animal.setCurrentCell(null);
-    }
-
-    public void addPlant(AbstractPlant plant){
-        plants.add(plant);
+    public void addNewPlant(AbstractPlant plant) {
+        newPlants.add(plant);
         plant.setCurrentCell(this);
     }
 
-    public void removePlant(AbstractPlant plant){
-        plants.remove(plant);
-        plant.setCurrentCell(null);
+    public void addPlant(AbstractPlant plant) {
+        plants.add(plant);
+        plant.setCurrentCell(this);
     }
 
     public Set<Creature> getCreatures() {
@@ -48,14 +47,6 @@ public class Cell {
         all.addAll(animals);
         all.addAll(plants);
         return all;
-    }
-
-    public void removeCreature(Creature creature) {
-        if (creature instanceof Animal animal) {
-            removeAnimal(animal);
-        } else if (creature instanceof AbstractPlant plant) {
-            removePlant(plant);
-        }
     }
 
     @Override

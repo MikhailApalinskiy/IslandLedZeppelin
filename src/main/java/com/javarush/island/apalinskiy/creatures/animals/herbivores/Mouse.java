@@ -25,44 +25,34 @@ public class Mouse extends Herbivore {
         if (cell == null) {
             return;
         }
-        cell.getLock().lock();
-        try {
-            if (!isAlive()) {
-                return;
+        Map<Class<? extends Creature>, Integer> preferences = getFoodPreferences();
+        if (preferences == null || preferences.isEmpty()) {
+            return;
+        }
+        for (Creature creature : cell.getCreatures()) {
+            if (this == creature) {
+                continue;
             }
-            Map<Class<? extends Creature>, Integer> preferences = getFoodPreferences();
-            if (preferences == null || preferences.isEmpty()) {
-                return;
+            if (getCurrentSatiety() >= getSatietySize()) {
+                break;
             }
-            for (Creature creature : cell.getCreatures()) {
-                if (this == creature) {
-                    continue;
+            Integer chance = preferences.get(creature.getClass());
+            if (chance == null) {
+                continue;
+            }
+            if (creature instanceof AbstractPlant plant) {
+                int roll = ThreadLocalRandom.current().nextInt(100);
+                if (roll < chance) {
+                    setCurrentSatiety(getCurrentSatiety() + plant.getWeight());
+                    plant.die();
                 }
-                if (getCurrentSatiety() >= getSatietySize()) {
-                    break;
-                }
-                Integer chance = preferences.get(creature.getClass());
-                if (chance == null) {
-                    continue;
-                }
-                if (creature instanceof AbstractPlant plant) {
-                    int roll = ThreadLocalRandom.current().nextInt(100);
-                    if (roll < chance) {
-                        setCurrentSatiety(getCurrentSatiety() + plant.getWeight());
-                        cell.removeCreature(creature);
-                        plant.die();
-                    }
-                } else if (creature instanceof Caterpillar caterpillar) {
-                    int roll = ThreadLocalRandom.current().nextInt(100);
-                    if (roll < chance) {
-                        setCurrentSatiety(getCurrentSatiety() + caterpillar.getWeight());
-                        cell.removeCreature(creature);
-                        caterpillar.die();
-                    }
+            } else if (creature instanceof Caterpillar caterpillar) {
+                int roll = ThreadLocalRandom.current().nextInt(100);
+                if (roll < chance) {
+                    setCurrentSatiety(getCurrentSatiety() + caterpillar.getWeight());
+                    caterpillar.die();
                 }
             }
-        } finally {
-            cell.getLock().unlock();
         }
     }
 }

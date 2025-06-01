@@ -6,6 +6,7 @@ import com.javarush.island.apalinskiy.creatures.Creature;
 import com.javarush.island.apalinskiy.entity.Eatable;
 import com.javarush.island.apalinskiy.entity.Reproducible;
 import com.javarush.island.apalinskiy.map.Cell;
+import com.javarush.island.apalinskiy.repository.AnimalRegistry;
 import com.javarush.island.apalinskiy.util.MapUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +24,7 @@ public abstract class Animal extends Creature implements Eatable, Moveable, Repr
     private final int flockSize;
     private final int serialNumber;
     private double currentSatiety;
-    private boolean isAlive = true;
+    private volatile boolean isAlive = true;
     private Cell currentCell;
 
     private static int counter = 0;
@@ -41,48 +42,32 @@ public abstract class Animal extends Creature implements Eatable, Moveable, Repr
 
     @Override
     public void die() {
-        this.isAlive = false;
-        if (getCurrentCell() != null) {
-            getCurrentCell().removeCreature(this);
-        }
+        isAlive = false;
         setCurrentCell(null);
+        AnimalRegistry.unregister(this);
     }
 
     @Override
     public void move() {
-        Cell cell = getCurrentCell();
-        if (cell == null) {
+        Cell from = getCurrentCell();
+        if (from == null) {
             return;
         }
-        cell.getLock().lock();
-        try {
-            if (!isAlive()) {
+        List<Cell> neighbors = MapUtils.getNeighborsInRange(from, getSpeed());
+        Collections.shuffle(neighbors);
+        for (Cell to : neighbors) {
+            int count = 0;
+            for (Animal a : to.getAnimals()) {
+                if (a.getClass() == this.getClass()) count++;
+            }
+            for (Animal a : to.getNewAnimals()) {
+                if (a.getClass() == this.getClass()) count++;
+            }
+            if (count < getFlockSize()) {
+                to.addNewAnimal(this);
+                setCurrentCell(to);
                 return;
             }
-            List<Cell> neighbors = MapUtils.getNeighborsInRange(cell, getSpeed());
-            Collections.shuffle(neighbors);
-            for (Cell toCell : neighbors) {
-                Cell firstLock = cell.hashCode() < toCell.hashCode() ? cell : toCell;
-                Cell secondLock = cell.hashCode() < toCell.hashCode() ? toCell : cell;
-                firstLock.getLock().lock();
-                secondLock.getLock().lock();
-                try {
-                    long sameTypeCount = toCell.getAnimals().stream()
-                            .filter(animal -> animal.getClass() == this.getClass())
-                            .count();
-                    if (sameTypeCount < getFlockSize()) {
-                        cell.removeAnimal(this);
-                        toCell.addAnimal(this);
-                        setCurrentCell(toCell);
-                        return;
-                    }
-                } finally {
-                    secondLock.getLock().unlock();
-                    firstLock.getLock().unlock();
-                }
-            }
-        } finally {
-            cell.getLock().unlock();
         }
     }
 
@@ -92,28 +77,23 @@ public abstract class Animal extends Creature implements Eatable, Moveable, Repr
         if (cell == null) {
             return null;
         }
-        cell.getLock().lock();
-        try {
-            if (!isAlive()) {
-                return null;
-            }
-            long sameTypeCount = cell.getAnimals().stream()
-                    .filter(animal -> animal.getClass() == this.getClass())
-                    .count();
-            if (sameTypeCount >= getFlockSize()) {
-                return null;
-            }
-            for (Creature animal : cell.getAnimals()) {
-                if (animal != this && animal.getClass() == this.getClass()) {
-                    Animal offSpring = createOffspring();
-                    cell.addAnimal(offSpring);
-                    return offSpring;
+        int count = 0;
+        Animal mate = null;
+        for (Animal animal : cell.getAnimals()) {
+            if (animal.getClass() == this.getClass()) {
+                count++;
+                if (animal != this && mate == null) {
+                    mate = animal;
                 }
             }
-        } finally {
-            cell.getLock().unlock();
         }
-        return null;
+        count += cell.getNewAnimals().size();
+        if (count >= getFlockSize() || mate == null) {
+            return null;
+        }
+        Animal offspring = createOffspring();
+        AnimalRegistry.register(offspring);
+        return offspring;
     }
 
     @Override

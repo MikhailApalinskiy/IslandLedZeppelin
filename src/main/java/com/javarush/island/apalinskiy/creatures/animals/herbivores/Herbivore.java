@@ -73,37 +73,28 @@ public abstract class Herbivore extends Animal {
         if (cell == null) {
             return;
         }
-        cell.getLock().lock();
-        try {
-            if (!isAlive()) {
-                return;
+        Map<Class<? extends Creature>, Integer> preferences = getFoodPreferences();
+        if (preferences == null || preferences.isEmpty()) {
+            return;
+        }
+        for (Creature creature : cell.getCreatures()) {
+            if (this == creature) {
+                continue;
             }
-            Map<Class<? extends Creature>, Integer> preferences = getFoodPreferences();
-            if (preferences == null || preferences.isEmpty()) {
-                return;
+            if (getCurrentSatiety() >= getSatietySize()) {
+                break;
             }
-            for (Creature creature : cell.getCreatures()) {
-                if (this == creature) {
-                    continue;
-                }
-                if (getCurrentSatiety() >= getSatietySize()) {
-                    break;
-                }
-                Integer chance = preferences.get(creature.getClass());
-                if (chance == null) {
-                    continue;
-                }
-                if (creature instanceof AbstractPlant plant) {
-                    int roll = ThreadLocalRandom.current().nextInt(100);
-                    if (roll < chance) {
-                        setCurrentSatiety(getCurrentSatiety() + plant.getWeight());
-                        cell.removeCreature(creature);
-                        plant.die();
-                    }
+            Integer chance = preferences.get(creature.getClass());
+            if (chance == null) {
+                continue;
+            }
+            if (creature instanceof AbstractPlant plant) {
+                int roll = ThreadLocalRandom.current().nextInt(100);
+                if (roll < chance) {
+                    setCurrentSatiety(getCurrentSatiety() + plant.getWeight());
+                    plant.die();
                 }
             }
-        } finally {
-            cell.getLock().unlock();
         }
     }
 }

@@ -25,57 +25,46 @@ public class Boar extends Herbivore {
         if (cell == null) {
             return;
         }
-        cell.getLock().lock();
-        try {
-            if (!isAlive()) {
-                return;
+        Map<Class<? extends Creature>, Integer> preferences = getFoodPreferences();
+        if (preferences == null || preferences.isEmpty()) {
+            return;
+        }
+        for (Creature creature : cell.getCreatures()) {
+            if (this == creature) {
+                continue;
             }
-            Map<Class<? extends Creature>, Integer> preferences = getFoodPreferences();
-            if (preferences == null || preferences.isEmpty()) {
-                return;
+            if (getCurrentSatiety() >= getSatietySize()) {
+                break;
             }
-            for (Creature creature : cell.getCreatures()) {
-                if (this == creature) {
-                    continue;
+            Integer chance = preferences.get(creature.getClass());
+            if (chance == null) {
+                continue;
+            }
+            switch (creature) {
+                case AbstractPlant plant -> {
+                    int roll = ThreadLocalRandom.current().nextInt(100);
+                    if (roll < chance) {
+                        setCurrentSatiety(getCurrentSatiety() + plant.getWeight());
+                        plant.die();
+                    }
                 }
-                if (getCurrentSatiety() >= getSatietySize()) {
-                    break;
+                case Caterpillar caterpillar -> {
+                    int roll = ThreadLocalRandom.current().nextInt(100);
+                    if (roll < chance) {
+                        setCurrentSatiety(getCurrentSatiety() + caterpillar.getWeight());
+                        caterpillar.die();
+                    }
                 }
-                Integer chance = preferences.get(creature.getClass());
-                if (chance == null) {
-                    continue;
+                case Mouse mouse -> {
+                    int roll = ThreadLocalRandom.current().nextInt(100);
+                    if (roll < chance) {
+                        setCurrentSatiety(getCurrentSatiety() + mouse.getWeight());
+                        mouse.die();
+                    }
                 }
-                switch (creature) {
-                    case AbstractPlant plant -> {
-                        int roll = ThreadLocalRandom.current().nextInt(100);
-                        if (roll < chance) {
-                            setCurrentSatiety(getCurrentSatiety() + plant.getWeight());
-                            cell.removeCreature(creature);
-                            plant.die();
-                        }
-                    }
-                    case Caterpillar caterpillar -> {
-                        int roll = ThreadLocalRandom.current().nextInt(100);
-                        if (roll < chance) {
-                            setCurrentSatiety(getCurrentSatiety() + caterpillar.getWeight());
-                            cell.removeCreature(creature);
-                            caterpillar.die();
-                        }
-                    }
-                    case Mouse mouse -> {
-                        int roll = ThreadLocalRandom.current().nextInt(100);
-                        if (roll < chance) {
-                            setCurrentSatiety(getCurrentSatiety() + mouse.getWeight());
-                            cell.removeCreature(creature);
-                            mouse.die();
-                        }
-                    }
-                    default -> {
-                    }
+                default -> {
                 }
             }
-        } finally {
-            cell.getLock().unlock();
         }
     }
 }
