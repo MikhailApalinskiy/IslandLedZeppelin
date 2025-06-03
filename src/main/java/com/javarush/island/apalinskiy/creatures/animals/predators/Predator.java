@@ -66,8 +66,8 @@ public abstract class Predator extends Animal {
         return foodMap.get(this.getClass());
     }
 
-    protected Predator(double weight, double satietySize, int speed, int flockSize) {
-        super(weight, satietySize, speed, flockSize);
+    protected Predator(double weight, double satietySize, int speed, int flockSize, String emoji) {
+        super(weight, satietySize, speed, flockSize, emoji);
     }
 
     @Override

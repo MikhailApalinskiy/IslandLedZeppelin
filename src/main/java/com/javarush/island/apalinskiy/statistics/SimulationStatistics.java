@@ -14,8 +14,9 @@ public class SimulationStatistics {
         Map<String, Integer> stats = new HashMap<>();
         for (List<Animal> animalGroup : AnimalRegistry.getAllAnimalGroups()) {
             if (!animalGroup.isEmpty()) {
-                String type = animalGroup.getFirst().getClass().getSimpleName();
-                stats.put(type, animalGroup.size());
+                Animal sample = animalGroup.getFirst();
+                String emoji = sample.getEmoji();
+                stats.put(emoji, animalGroup.size());
             }
         }
         return stats;
@@ -25,19 +26,20 @@ public class SimulationStatistics {
         Map<String, Integer> stats = new HashMap<>();
         for (List<AbstractPlant> plantGroup : PlantRegistry.getAllPlantGroups()) {
             if (!plantGroup.isEmpty()) {
-                String type = plantGroup.getFirst().getClass().getSimpleName();
-                stats.put(type, plantGroup.size());
+                AbstractPlant sample = plantGroup.getFirst();
+                String emoji = sample.getEmoji();
+                stats.put(emoji, plantGroup.size());
             }
         }
         return stats;
     }
 
-    public static void printStatistics() {
-        System.out.println("=== Animal Statistics ===");
-        collectAnimalStatistics().forEach((type, count) ->
-                System.out.printf("%-15s: %d%n", type, count));
-        System.out.println("\n=== Plant Statistics ===");
-        collectPlantStatistics().forEach((type, count) ->
-                System.out.printf("%-15s: %d%n", type, count));
+    public static String getStatisticsText() {
+        StringBuilder sb = new StringBuilder();
+        collectAnimalStatistics().forEach((emoji, count) ->
+                sb.append(String.format("%s : %d\n", emoji, count)));
+        collectPlantStatistics().forEach((emoji, count) ->
+                sb.append(String.format("%s : %d\n", emoji, count)));
+        return sb.toString();
     }
 }

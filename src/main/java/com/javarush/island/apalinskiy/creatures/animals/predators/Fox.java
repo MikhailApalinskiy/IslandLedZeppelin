@@ -5,7 +5,7 @@ import com.javarush.island.apalinskiy.creatures.animals.Animal;
 public class Fox extends Predator {
 
     public Fox() {
-        super(8, 2, 2, 30);
+        super(8, 2, 2, 30, "\uD83E\uDD8A");
     }
 
     @Override

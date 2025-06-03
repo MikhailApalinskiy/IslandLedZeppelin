@@ -5,7 +5,7 @@ import com.javarush.island.apalinskiy.creatures.animals.Animal;
 public class Deer extends Herbivore {
 
     public Deer() {
-        super(300, 50, 4, 20);
+        super(300, 50, 4, 20, "\uD83E\uDD8C");
     }
 
     @Override

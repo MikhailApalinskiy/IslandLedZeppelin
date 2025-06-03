@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Mouse extends Herbivore {
 
     public Mouse() {
-        super(0.05, 0.01, 1, 500);
+        super(0.05, 0.01, 1, 500, "\uD83D\uDC01");
     }
 
     @Override

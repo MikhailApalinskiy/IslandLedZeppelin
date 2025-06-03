@@ -22,13 +22,16 @@ public abstract class AbstractPlant extends Creature implements Killable, Reprod
     private final int speed = 1;
     private volatile boolean isAlive = true;
     private Cell currentCell;
+    private final String emoji;
+    private int tickCounter = 0;
 
     private static int counter = 0;
 
-    public AbstractPlant(int flockSize, double weight) {
+    public AbstractPlant(int flockSize, double weight, String emoji) {
         this.serialNumber = ++counter;
         this.flockSize = flockSize;
         this.weight = weight;
+        this.emoji = emoji;
     }
 
     protected abstract AbstractPlant createOffspring();

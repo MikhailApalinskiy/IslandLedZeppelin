@@ -7,9 +7,11 @@ import lombok.Getter;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
 public class Cell {
+    private final int plantLifeCycle = 6;
     private final int x;
     private final int y;
     private final ArrayList<Animal> animals = new ArrayList<>();
@@ -58,5 +60,52 @@ public class Cell {
     @Override
     public int hashCode() {
         return Objects.hash(x, y);
+    }
+
+    public void processLogicStep() {
+        for (Animal animal : animals) {
+            if (!animal.isAlive()) {
+                continue;
+            }
+            animal.eat();
+            if (animal.getCurrentSatiety() == 0) {
+                animal.die();
+            }
+            int animalReproduceChance = 30;
+            if (ThreadLocalRandom.current().nextInt(100) < animalReproduceChance) {
+                Animal offspring = animal.reproduce();
+                if (offspring != null) {
+                    addNewAnimal(offspring);
+                }
+            }
+            animal.move();
+        }
+        for (AbstractPlant plant : plants) {
+            if (!plant.isAlive()) {
+                continue;
+            }
+            int i = plant.getTickCounter();
+            i++;
+            plant.setTickCounter(i);
+            int plantReproduceChance = 20;
+            if (ThreadLocalRandom.current().nextInt(100) < plantReproduceChance) {
+                AbstractPlant offSpring = plant.reproduce();
+                if (offSpring != null && offSpring.getCurrentCell() == this) {
+                    addNewPlant(offSpring);
+                }
+            }
+            if (i >= plantLifeCycle) {
+                plant.die();
+            }
+        }
+    }
+
+    public void processCleanupStep() {
+        animals.removeIf(a -> !a.isAlive() || a.getCurrentCell() != this);
+        animals.addAll(newAnimals);
+        newAnimals.clear();
+        plants.removeIf(p -> !p.isAlive());
+        plants.addAll(newPlants);
+        newPlants.clear();
     }
 }

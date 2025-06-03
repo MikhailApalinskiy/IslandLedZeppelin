@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Boar extends Herbivore {
 
     public Boar() {
-        super(400, 50, 2, 50);
+        super(400, 50, 2, 50, "\uD83D\uDC17");
     }
 
     @Override

@@ -63,8 +63,8 @@ public abstract class Herbivore extends Animal {
         return foodMap.get(this.getClass());
     }
 
-    protected Herbivore(double weight, double satietySize, int speed, int flockSize) {
-        super(weight, satietySize, speed, flockSize);
+    protected Herbivore(double weight, double satietySize, int speed, int flockSize, String emoji) {
+        super(weight, satietySize, speed, flockSize, emoji);
     }
 
     @Override

@@ -26,16 +26,18 @@ public abstract class Animal extends Creature implements Eatable, Moveable, Repr
     private double currentSatiety;
     private volatile boolean isAlive = true;
     private Cell currentCell;
+    private final String emoji;
 
     private static int counter = 0;
 
-    protected Animal(double weight, double satietySize, int speed, int flockSize) {
+    protected Animal(double weight, double satietySize, int speed, int flockSize, String emoji) {
         this.weight = weight;
         this.satietySize = satietySize;
         this.speed = speed;
         this.flockSize = flockSize;
         this.serialNumber = ++counter;
         this.currentSatiety = 0;
+        this.emoji = emoji;
     }
 
     protected abstract Animal createOffspring();
