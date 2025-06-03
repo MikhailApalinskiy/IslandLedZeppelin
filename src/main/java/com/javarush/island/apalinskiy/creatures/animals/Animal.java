@@ -27,6 +27,7 @@ public abstract class Animal extends Creature implements Eatable, Moveable, Repr
     private volatile boolean isAlive = true;
     private Cell currentCell;
     private final String emoji;
+    private int tikCount = 0;
 
     private static int counter = 0;
 

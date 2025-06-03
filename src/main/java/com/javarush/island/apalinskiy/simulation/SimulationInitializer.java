@@ -26,7 +26,7 @@ public class SimulationInitializer {
             try {
                 Animal prototype = animalClass.getDeclaredConstructor().newInstance();
                 int flockSize = prototype.getFlockSize();
-                int animalFactor = 1;
+                int animalFactor = 2;
                 int totalToPlace = flockSize * animalFactor;
                 int placed = 0;
                 while (placed < totalToPlace) {
@@ -59,7 +59,7 @@ public class SimulationInitializer {
             try {
                 AbstractPlant prototype = plantClass.getDeclaredConstructor().newInstance();
                 int flockSize = prototype.getFlockSize();
-                int plantFactor = 2;
+                int plantFactor = 5;
                 int totalToPlace = flockSize * plantFactor;
                 int placed = 0;
                 while (placed < totalToPlace) {

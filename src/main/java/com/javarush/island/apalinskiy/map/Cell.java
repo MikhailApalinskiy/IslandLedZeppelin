@@ -12,6 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Getter
 public class Cell {
     private final int plantLifeCycle = 6;
+    private final int animaLifeCycle = 120;
     private final int x;
     private final int y;
     private final ArrayList<Animal> animals = new ArrayList<>();
@@ -67,7 +68,13 @@ public class Cell {
             if (!animal.isAlive()) {
                 continue;
             }
+            int i = animal.getTikCount();
+            i++;
+            animal.setTikCount(i);
             animal.eat();
+            if (animal.getTikCount() >= animaLifeCycle) {
+                animal.die();
+            }
             if (animal.getCurrentSatiety() == 0) {
                 animal.die();
             }
