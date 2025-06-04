@@ -22,7 +22,7 @@ public class Runner extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/fxml/main.fxml")));
-        primaryStage.setTitle("Симуляция острова");
+        primaryStage.setTitle("Island simulation");
         primaryStage.setScene(new Scene(root));
         primaryStage.setMaximized(true);
         primaryStage.show();
