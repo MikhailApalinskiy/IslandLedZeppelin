@@ -5,7 +5,8 @@ import lombok.Getter;
 /**
  * Represents the core simulation map consisting of a two-dimensional grid of {@link Cell} objects.
  * <p>
- * The map dimensions are fixed at {@code length = 100} and {@code width = 20}, forming a 100×20 grid.
+ * The map dimensions can be customized via the {@code length} and {@code width} fields,
+ * allowing for flexible adjustment of the simulation field size.
  * Each cell is initialized via {@link #initializeMap()}, which populates the {@code map} array with new {@code Cell} instances.
  * <p>
  * This class serves as the central structure for storing and accessing simulation state, and is shared
@@ -16,7 +17,17 @@ import lombok.Getter;
  */
 @Getter
 public class Map {
+    /**
+     * The length (number of columns) of the map grid.
+     * <p>
+     * This value can be modified to configure the horizontal size of the field.
+     */
     private final int length = 100;
+    /**
+     * The width (number of rows) of the map grid.
+     * <p>
+     * This value can be modified to configure the vertical size of the field.
+     */
     private final int width = 20;
     private final Cell[][] map = new Cell[length][width];
 
