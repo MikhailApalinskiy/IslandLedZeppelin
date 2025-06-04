@@ -9,28 +9,39 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Phaser;
 
 /**
- * Manages execution of the simulation in a step-by-step, multi-threaded fashion.
- * <p>
- * The simulation is split into three well-defined phases per cycle:
+ * This simulation is executed in a step-by-step manner.
+ * Threads process grid cell blocks rather than specific animal species.
+ * There are three distinct phases per simulation step:
  * <ol>
- *   <li><b>Phase 1</b>: Processing of all animals and plants inside their assigned {@code Cell} blocks.
- *       Reproduction and movement are recorded into thread-safe buffers.</li>
- *   <li><b>Phase 2</b>: Consolidation of the temporary changes back into the main cell structures.</li>
- *   <li><b>Phase 3</b>: Triggering of UI updates and statistical output via {@code Platform.runLater} or console.</li>
+ *   <li>Processing animals in cells and storing changes in thread-safe collections.</li>
+ *   <li>Applying those changes to the main collections inside cells.</li>
+ *   <li>Rendering statistics and UI updates.</li>
  * </ol>
- *
  * <p>
- * Threads do not manage species, but instead process blocks of map rows ({@code Cell[][]}),
- * which promotes spatial locality and simplifies synchronization.
+ * This design eliminates the need for explicit locking,
+ * avoiding potential deadlocks and resource contention.
+ * The entire simulation remains synchronized via Phaser phases.
  *
+ * <p><strong>⚠ Simulation Performance Warning:</strong></p>
  * <p>
- * Uses {@link java.util.concurrent.Phaser} for global coordination of all worker threads
- * and the main thread. This design eliminates the need for explicit locks (e.g. {@code synchronized} or {@code ReentrantLock}),
- * which improves performance and prevents deadlocks or resource contention.
- *
+ * This simulation architecture is not optimized for extremely high population density.
+ * When the total number of animals exceeds <strong>500,000</strong>,
+ * a single simulation tick may take over <strong>1 minute</strong> to process.
+ * This is due to:
+ * <ul>
+ *   <li>Step-by-step iteration through all cells and entities</li>
+ *   <li>Per-tick evaluation of reproduction, death, and movement</li>
+ *   <li>Accumulated overhead from dynamic collection manipulation</li>
+ * </ul>
  * <p>
- * The number of worker threads is based on the number of available processors,
- * and they are managed using a fixed thread pool.
+ * <strong>Suggestions for future optimization:</strong>
+ * <ul>
+ *   <li>Introduce chunk-based or region-level processing</li>
+ *   <li>Skip logic for cells with no active entities</li>
+ *   <li>Employ spatial partitioning or entity indexing</li>
+ *   <li>Refactor entity logic for better CPU cache locality</li>
+ *   <li>Add optional population caps or entity culling mechanisms</li>
+ * </ul>
  */
 public class SimulationManager {
     private final ExecutorService executor;
