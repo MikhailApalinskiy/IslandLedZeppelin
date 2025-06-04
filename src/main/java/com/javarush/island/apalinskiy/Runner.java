@@ -8,6 +8,16 @@ import javafx.stage.Stage;
 
 import java.util.Objects;
 
+/**
+ * Entry point for the JavaFX application.
+ * <p>
+ * Loads the main FXML layout and launches the island simulation UI.
+ * <p>
+ * To start the simulation, run the application via Maven:
+ * <pre>{@code
+ * mvn javafx:run
+ * }</pre>
+ */
 public class Runner extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {

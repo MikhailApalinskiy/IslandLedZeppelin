@@ -10,6 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Thread-safe repository for managing all animal instances grouped by type.
+ * <p>
+ * Used primarily for collecting simulation statistics.
+ * <p>
+ * Animals are registered during initialization or reproduction,
+ * and the registry supports concurrent access from simulation threads.
+ */
 public class AnimalRegistry {
     private static final Map<Class<? extends Animal>, List<Animal>> registry = new ConcurrentHashMap<>();
 

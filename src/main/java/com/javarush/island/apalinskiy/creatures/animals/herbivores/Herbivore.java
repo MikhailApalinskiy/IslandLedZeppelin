@@ -10,7 +10,29 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Abstract base class for all herbivorous animals in the simulation.
+ * <p>
+ * Defines food preferences for each herbivore species via a static {@code foodMap},
+ * which maps a herbivore class to a set of edible creature types with associated success chances.
+ * <p>
+ * The {@code eat()} method implements basic plant consumption logic based on current satiety
+ * and randomized chance, and uses shared preferences configured statically.
+ * <p>
+ * This class is not meant to be instantiated directly, but serves as a reusable foundation
+ * for all plant-eating creatures.
+ */
 public abstract class Herbivore extends Animal {
+    /**
+     * A static registry of herbivore food preferences.
+     * <p>
+     * Maps each herbivore class to a map of edible plant or creature types,
+     * with associated chance percentages (0–100) representing the probability
+     * of successful consumption.
+     * <p>
+     * This configuration supports the logic in the {@code eat()} method
+     * for all herbivorous animals in the simulation.
+     */
     protected static final Map<Class<? extends Creature>, Map<Class<? extends Creature>, Integer>> foodMap = new HashMap<>();
 
     static {

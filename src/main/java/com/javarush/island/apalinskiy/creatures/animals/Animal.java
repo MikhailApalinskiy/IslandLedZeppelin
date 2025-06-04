@@ -15,6 +15,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Base class for all animal entities in the simulation.
+ * <p>
+ * Implements {@link Eatable}, {@link Moveable}, {@link Reproducible}, and {@link Killable},
+ * enabling each animal to perform core life functions: eating, moving, reproducing, and dying.
+ * <p>
+ * Each animal has a unique {@code serialNumber}, used in {@code equals()} and {@code hashCode()}.
+ * These overrides were originally necessary for identity-based management in hash-based
+ * collections (such as {@link java.util.HashSet}) during earlier designs of the simulation.
+ * <p>
+ * Since the simulation was refactored into a step-by-step model where threads process
+ * map cells (rather than species), and synchronized collections replaced sets,
+ * the original need for these overrides was eliminated. However, they are retained
+ * for potential future scenarios involving identity-sensitive structures.
+ * <p>
+ * The {@code emoji} field is used for visual representation in the JavaFX interface.
+ */
 @Setter
 @Getter
 public abstract class Animal extends Creature implements Eatable, Moveable, Reproducible<Animal>, Killable {

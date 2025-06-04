@@ -10,6 +10,18 @@ import com.javarush.island.apalinskiy.repository.PlantRegistry;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Utility class responsible for populating the simulation map with initial animals and plants.
+ * <p>
+ * The initializer distributes entities randomly across the map, while respecting
+ * the maximum number of same-species instances allowed per cell (based on their flock size).
+ * <p>
+ * Each species is instantiated from its class via reflection and then registered
+ * in a thread-safe registry for further statistical tracking.
+ * <p>
+ * This class is intended to be used once at the start of the simulation and is not thread-safe.
+ * It assumes exclusive access to the map during population.
+ */
 public class SimulationInitializer {
     private final Map map;
 
@@ -26,7 +38,7 @@ public class SimulationInitializer {
             try {
                 Animal prototype = animalClass.getDeclaredConstructor().newInstance();
                 int flockSize = prototype.getFlockSize();
-                int animalFactor = 2;
+                int animalFactor = 2;// Multiplier for total animals per species (flockSize * animalFactor)
                 int totalToPlace = flockSize * animalFactor;
                 int placed = 0;
                 while (placed < totalToPlace) {
@@ -59,7 +71,7 @@ public class SimulationInitializer {
             try {
                 AbstractPlant prototype = plantClass.getDeclaredConstructor().newInstance();
                 int flockSize = prototype.getFlockSize();
-                int plantFactor = 5;
+                int plantFactor = 5;// Multiplier for total plants per species (flockSize * plantFactor)
                 int totalToPlace = flockSize * plantFactor;
                 int placed = 0;
                 while (placed < totalToPlace) {

@@ -35,6 +35,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * The final frontier of simulation control.
+ * <p>
+ * Handles rendering, user input, and phased updates.
+ * <p>
+ * There is no god beyond this class.
+ */
 public class Controller {
 
     private final Map map = new Map();
@@ -174,6 +181,25 @@ public class Controller {
         return Math.max(0.0, Math.min(1.0, value));
     }
 
+    /**
+     * Updates the visual state of the entire grid based on the current contents of each cell.
+     * <p>
+     * Applies background color changes based on plant presence, and displays up to 15 unique animal emojis per cell.
+     * <p>
+     * ⚠️ Performance Warning:
+     * <ul>
+     *   <li>May cause significant lag, especially at simulation startup with a large number of animals.</li>
+     *   <li>Re-rendering emoji labels and recalculating font sizes across all cells is computationally expensive.</li>
+     *   <li>No definitive solution to this bottleneck has yet been implemented.</li>
+     * </ul>
+     * <p>
+     * 💡 Potential optimizations:
+     * <ul>
+     *   <li>Cache emoji strings per cell and update only on meaningful changes.</li>
+     *   <li>Skip rendering for visually unchanged cells between ticks.</li>
+     *   <li>Use {@code Canvas} or low-level drawing APIs instead of {@code Label} elements for faster rendering.</li>
+     * </ul>
+     */
     private void updateMapView() {
         for (int y = 0; y < cellViews.length; y++) {
             for (int x = 0; x < cellViews[0].length; x++) {

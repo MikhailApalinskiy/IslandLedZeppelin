@@ -13,6 +13,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Base class for all plant-like entities in the simulation.
+ * <p>
+ * Implements {@link Killable} and {@link Reproducible} to support lifecycle management
+ * and propagation of plant species within a cell and its neighbors.
+ * <p>
+ * This entity overrides {@code equals()} and {@code hashCode()} using a unique serial number.
+ * These overrides were originally introduced to ensure correct behavior in hash-based collections
+ * (such as {@link java.util.HashSet}) used in earlier versions of the simulation.
+ * <p>
+ * After redesigning the simulation into a step-by-step model where threads process
+ * map regions instead of species and synchronized collections are used instead of sets,
+ * the requirement for identity-based hashing was removed. However, the overrides remain
+ * for potential future use or collection logic that may again rely on object identity.
+ * <p>
+ * The class also maintains an {@code emoji} field used for UI representation.
+ */
 @Getter
 @Setter
 public abstract class AbstractPlant extends Creature implements Killable, Reproducible<AbstractPlant> {
@@ -99,5 +116,4 @@ public abstract class AbstractPlant extends Creature implements Killable, Reprod
     public int hashCode() {
         return Objects.hashCode(serialNumber);
     }
-
 }

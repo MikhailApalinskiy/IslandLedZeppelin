@@ -7,6 +7,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Utility class providing map-related helper methods for the simulation.
+ * <p>
+ * It allows efficient retrieval of neighboring cells within a given range,
+ * used primarily by animals during movement logic.
+ * <p>
+ * To reduce repeated calculations and object allocations, a thread-safe
+ * cache is maintained for neighbor lookup results based on cell coordinates
+ * and movement range.
+ * <p>
+ * This class assumes the simulation map is initialized once via {@link #init(Map)}
+ * and remains unchanged throughout the simulation.
+ * <p><b>Thread safety:</b> read operations and cache usage are thread-safe.
+ */
 public class MapUtils {
     private static volatile Map map;
 

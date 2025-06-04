@@ -9,6 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Thread-safe repository for managing all plant instances grouped by type.
+ * <p>
+ * Used to gather map statistics.
+ * <p>
+ * Plants are registered when initially placed or reproduced,
+ * and the structure supports concurrent modifications.
+ */
 public class PlantRegistry {
     private static final Map<Class<? extends AbstractPlant>, List<AbstractPlant>> registry = new ConcurrentHashMap<>();
 

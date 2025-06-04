@@ -9,9 +9,29 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
-
+/**
+ * Abstract base class for all carnivorous (predator) animals in the simulation.
+ * <p>
+ * Defines species-specific food preferences using a static {@code foodMap},
+ * where each predator type is mapped to a set of prey types with corresponding
+ * success probabilities.
+ * <p>
+ * The {@code eat()} method implements basic predation logic using these preferences,
+ * random chance, and current satiety levels.
+ * <p>
+ * This class is not meant to be instantiated directly, but provides a shared
+ * foundation for all predator animals in the ecosystem model.
+ */
 public abstract class Predator extends Animal {
-
+    /**
+     * A static registry of predator food preferences.
+     * <p>
+     * Maps each predator class to a map of possible prey types with associated
+     * chance percentages (0–100) of successful consumption.
+     * <p>
+     * This central configuration allows all predator species to share and follow
+     * consistent predation logic in the {@code eat()} method.
+     */
     protected static final Map<Class<? extends Creature>, Map<Class<? extends Creature>, Integer>> foodMap = new HashMap<>();
 
     static {
