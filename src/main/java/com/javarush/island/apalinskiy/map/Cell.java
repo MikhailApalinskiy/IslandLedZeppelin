@@ -107,9 +107,9 @@ public class Cell {
             if (!animal.isAlive()) {
                 continue;
             }
-            int i = animal.getTikCount();
-            i++;
-            animal.setTikCount(i);
+            int tikCount = animal.getTikCount();
+            tikCount++;
+            animal.setTikCount(tikCount);
             animal.eat();
             if (animal.getTikCount() >= animaLifeCycle) {
                 animal.die();
@@ -130,9 +130,9 @@ public class Cell {
             if (!plant.isAlive()) {
                 continue;
             }
-            int i = plant.getTickCounter();
-            i++;
-            plant.setTickCounter(i);
+            int tickCounter = plant.getTickCounter();
+            tickCounter++;
+            plant.setTickCounter(tickCounter);
             int plantReproduceChance = 20;
             if (ThreadLocalRandom.current().nextInt(100) < plantReproduceChance) {
                 AbstractPlant offSpring = plant.reproduce();
@@ -140,7 +140,7 @@ public class Cell {
                     addNewPlant(offSpring);
                 }
             }
-            if (i >= plantLifeCycle) {
+            if (tickCounter >= plantLifeCycle) {
                 plant.die();
             }
         }
