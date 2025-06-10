@@ -32,6 +32,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @Getter
 public class Cell {
+    private final int animalReproduceChance = 30;
+    private final int plantReproduceChance = 20;
     private final int plantLifeCycle = 6;// Max ticks before a plant dies naturally
     private final int animaLifeCycle = 120;// Max ticks before an animal dies naturally
     private final int x;
@@ -107,9 +109,7 @@ public class Cell {
             if (!animal.isAlive()) {
                 continue;
             }
-            int tikCount = animal.getTikCount();
-            tikCount++;
-            animal.setTikCount(tikCount);
+            animal.setTikCount(animal.getTikCount() + 1);
             animal.eat();
             if (animal.getTikCount() >= animaLifeCycle) {
                 animal.die();
@@ -117,7 +117,6 @@ public class Cell {
             if (animal.getCurrentSatiety() == 0) {
                 animal.die();
             }
-            int animalReproduceChance = 30;
             if (ThreadLocalRandom.current().nextInt(100) < animalReproduceChance) {
                 Animal offspring = animal.reproduce();
                 if (offspring != null) {
@@ -130,18 +129,15 @@ public class Cell {
             if (!plant.isAlive()) {
                 continue;
             }
-            int tickCounter = plant.getTickCounter();
-            tickCounter++;
-            plant.setTickCounter(tickCounter);
-            int plantReproduceChance = 20;
+            plant.setTickCounter(plant.getTickCounter() + 1);
+            if (plant.getTickCounter() >= plantLifeCycle) {
+                plant.die();
+            }
             if (ThreadLocalRandom.current().nextInt(100) < plantReproduceChance) {
                 AbstractPlant offSpring = plant.reproduce();
                 if (offSpring != null && offSpring.getCurrentCell() == this) {
                     addNewPlant(offSpring);
                 }
-            }
-            if (tickCounter >= plantLifeCycle) {
-                plant.die();
             }
         }
     }
